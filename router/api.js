@@ -1,6 +1,6 @@
 const { Router } = require('express')
 router = Router()
-const { encryptPass, registerUser, comparePass, getPassByName } = require('../services')
+const { encryptPass, registerUser, comparePass, getUserByName } = require('../services')
 
 router.post('/register', async (req, res, next) => {
     try {
@@ -18,19 +18,26 @@ router.post('/register', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => {
     try {
-        const {name, password} = req.body
+        const { name, password } = req.body
 
-        const [user] = await getPassByName(name)
+        const [user] = await getUserByName(name)
 
         const authenticated = comparePass(password, user.password)
 
-        if(!authenticated) {
+        if (!authenticated) {
             const wrongPass = new Error('Try Again!')
             wrongPass.httpStatusCode = 400
             throw wrongPass
         }
-        
-        res.json('/login')
+
+        if (req.session) {
+            req.session.userID = user.id
+        } else {
+            const sessionBroken = new Error('express-session not working')
+            throw sessionBroken
+        }
+
+        res.json({id:user.id})
     } catch (e) {
         next(e)
     }
