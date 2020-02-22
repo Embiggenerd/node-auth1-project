@@ -2,9 +2,10 @@ const { Router } = require('express')
 
 router = Router()
 
+
 router.post('/register', async (req, res, next) => {
     try {
-        res.json('register')
+        res.json()
     } catch (e) {
         next(e)
     }
