@@ -1,13 +1,13 @@
 const { Router } = require('express')
 router = Router()
-const { encryptPass, registerUser } = require('../services')
+const { encryptPass, registerUser, comparePass, getPassByName } = require('../services')
 
 router.post('/register', async (req, res, next) => {
     try {
         const { password, name } = req.body
 
-        const hashedPassword = await encryptPass(password)
-        console.log('hashedPassword', hashedPassword, name)
+        const hashedPassword = encryptPass(password)
+
         const registered = await registerUser(name, hashedPassword)
 
         res.json(registered)
@@ -16,8 +16,15 @@ router.post('/register', async (req, res, next) => {
     }
 })
 
-router.post('/login', (req, res, next) => {
+router.post('/login', async (req, res, next) => {
     try {
+        const {name, password} = req.body
+
+        const [user] = await getPassByName(name)
+        // console.log(hashedPassword)
+        const authenticated = comparePass(password, user.password)
+
+        console.log('authenticated', authenticated)
         res.json('/login')
     } catch (e) {
         next(e)
