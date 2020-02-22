@@ -21,10 +21,15 @@ router.post('/login', async (req, res, next) => {
         const {name, password} = req.body
 
         const [user] = await getPassByName(name)
-        // console.log(hashedPassword)
+
         const authenticated = comparePass(password, user.password)
 
-        console.log('authenticated', authenticated)
+        if(!authenticated) {
+            const wrongPass = new Error('Try Again!')
+            wrongPass.httpStatusCode = 400
+            throw wrongPass
+        }
+        
         res.json('/login')
     } catch (e) {
         next(e)
