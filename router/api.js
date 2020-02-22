@@ -1,11 +1,16 @@
 const { Router } = require('express')
-
 router = Router()
-
+const { encryptPass, registerUser } = require('../services')
 
 router.post('/register', async (req, res, next) => {
     try {
-        res.json()
+        const { password, name } = req.body
+
+        const hashedPassword = await encryptPass(password)
+        console.log('hashedPassword', hashedPassword, name)
+        const registered = await registerUser(name, hashedPassword)
+
+        res.json(registered)
     } catch (e) {
         next(e)
     }
