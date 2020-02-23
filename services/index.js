@@ -8,6 +8,6 @@ const usersService = require('./users')
 const authService = require('./auth')
 
 module.exports = {
-    ...usersService(db('users')),
+    ...usersService(db),
     ...authService(crypt)
 }
